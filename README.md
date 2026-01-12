@@ -1,1 +1,1 @@
-AAsynchronous Programming in JavaScript in practice
+Asynchronous Programming in JavaScript in practice

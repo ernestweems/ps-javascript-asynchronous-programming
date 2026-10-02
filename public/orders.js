@@ -1,23 +1,16 @@
 let statuses = [];
-let xhr = new XMLHttpRequest();
+showWaiting();
 
-xhr.open("GET", "http://localhost:3000/api/orderStatuses");
-xhr.onload = () => {
-  statuses = JSON.parse(xhr.responseText);
+axios.get("http://localhost:3000/api/orderStatuses").then(({data}) => {
+    statuses = data;
 
-  let xhr2 = new XMLHttpRequest();
-  xhr2.open("GET", "http://localhost:3000/api/orders");
-  xhr2.onload = () => {
-    const orders = JSON.parse(xhr2.responseText);
-    const fullOrders = orders.map((o) => {
-      o.orderStatus = statuses.find(
-        (s) => s.id === o.orderStatusId
-      ).description;
-      return o;
+    return axios.get("http://localhost:3000/api/orders");
+}).then(({ data }) => {
+    let orders = data.map((o) => {
+        return {
+            ...o,
+            orderStatus: statuses.find((d) => d.id === o.orderStatusId).description,
+        };
     });
-
-    showOrderList("#order-list", fullOrders);
-  };
-  xhr2.send();
-};
-xhr.send();
+    showOrderList("#order-list", orders);
+}).finally(() => { setTimeout( hideWaiting, hideWaiting())}  )
